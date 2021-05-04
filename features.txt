@@ -1,0 +1,18 @@
+1. Wybór miasta
+	z google:
+	- liczba ludności 
+	- zagęszczenie ludności
+	- migracja ludności:
+		- wpływ lotnisk, pociągów i innych środków komunikacji
+
+2. Wpływ czynników zewnętrznych:
+	- pory roku
+	- klimat
+	- wprowadzenie pracy zdalnej w firmach
+	- wpływ dni wolnych od pracy
+	
+3. Wpływ działania władz państwa (obostrzenia):
+	- zamykanie hoteli, gospodarki, etc.
+	- lockdown
+
+4. Wpływ szczepień
