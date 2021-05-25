@@ -1,8 +1,4 @@
-import pygame
-from constants import *
-import random
 import numpy as np
-
 
 class SEIRCellMachine:
     def __init__(self, simulation_time, data_file_name, susceptible, exposed, infective, recovered, exposed_time,
