@@ -29,6 +29,5 @@ def read_asc(file, delimiter=" "):
                 is_cellsize = True
             if re.match(r"NODATA_value", line):
                 nan = re.split(r"\s+", line)[1]
-                print(f"NAN: {nan}")
                 is_nodata = True
         return data
