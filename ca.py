@@ -9,11 +9,19 @@ class State:
             self.type = type
         else:
             raise ValueError('Invalid type value. Choose from [S, E, I, R]')
-        self.day = day
+        self._day = day
         if n >= 0:
             self.n = n
         else:
             raise ValueError("Number must be positive")
+
+    @property
+    def day(self):
+        return self._day
+
+    @day.setter
+    def day(self, _):
+        raise TypeError("Day can't be changed")
 
     def __repr__(self):
         return f"State ({self.type}, {self.day}, {self.n})"
@@ -71,9 +79,14 @@ class CA:
         self.C = [[np.nan for _ in range(density.shape[1])] for _ in range(density.shape[0])]
         for i, row in enumerate(density):
             for j, col in enumerate(row):
-                self.C[i][j] = StateVector(a, b, init_data=[1]*6)
+                init_data = []
+                x = 0
+                for _ in range(a+b+2):
+                    new_x = random.randint(0, col-x)
+                    init_data.append(new_x)
+                    x += new_x
 
-        print(self.C[0][0])
+                self.C[i][j] = StateVector(a, b, init_data=init_data)
 
     def nbhd(self, i: int, j: int):
         return self.C[i-1:i+2, j-1:j+2]
