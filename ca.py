@@ -3,18 +3,6 @@ import random
 
 import numpy as np
 
-class State:
-    S = 0
-    E = 1
-    I = 2
-    R = 3
-
-    def __init__(self, density):
-        self.population = random.choices([State.S, State.E, State.I, State.R], k=density)
-
-    def __repr__(self):
-        return f"State ({self.population})"
-
 class CA:
 
     def __init__(self, density):
