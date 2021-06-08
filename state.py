@@ -110,7 +110,7 @@ class StateVector:
 
     def next(self):
         for it in range(1, self.a):
-            self.__vector[it+1].n = self.__vector[it]
+            self.__vector[it+1].n = self.__vector[it].n
         for it in range(self.a+1, self.a+self.b):
-            self.__vector[it+1].n = self.__vector[it]
+            self.__vector[it+1].n = self.__vector[it].n
         #TODO add derivatives
