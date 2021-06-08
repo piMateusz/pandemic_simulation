@@ -2,6 +2,8 @@
 import random
 import numpy as np
 
+from state import StateVector
+
 class CA:
 
     def __init__(self, density, *, a, b):
