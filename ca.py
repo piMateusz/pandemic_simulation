@@ -18,6 +18,8 @@ class CA:
                     x += new_x
 
                 self.C[i][j] = StateVector(a, b, init_data=init_data)
+                print(self.C[i][j])
+                print(self.C[i][j].total())
 
     def nbhd(self, i: int, j: int):
         return self.C[i-1:i+2, j-1:j+2]
