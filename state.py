@@ -60,7 +60,7 @@ class StateVector:
     def __getitem__(self, key):
         if isinstance(key, int):
             return self.__vector[key]
-        elif key in StateVector.key_map:
+        elif key in StateVector.__key_map:
             return self.__vector[StateVector.__key_map[key]]
         else:
             raise KeyError('Key must be int or proper string')
