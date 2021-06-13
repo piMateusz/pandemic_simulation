@@ -1,12 +1,12 @@
 from ca import CA
 import read
 from visualization.buttons import Button
-from visualization.window_actions import *
+import visualization.window_actions as wa
 from constants import CELL_SIZE
 
 
 def main():
-    pygame.init()
+    wa.pygame.init()
 
     # CA
     density_map = read.read_asc("data/polds00g.asc")
@@ -23,19 +23,19 @@ def main():
     randomize_data_button = Button(screen_width - 175, 400, 150, 30, "Randomize data")
     buttons = [import_data_button, start_simulation_button, stop_simulation_button, randomize_data_button]
 
-    win = pygame.display.set_mode((screen_width, screen_height))
-    pygame.display.set_caption('Pandemic simulation')
+    win = wa.pygame.display.set_mode((screen_width, screen_height))
+    wa.pygame.display.set_caption('Pandemic simulation')
 
     run = True
 
     # main loop
     while run:
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+        for event in wa.pygame.event.get():
+            if event.type == wa.pygame.QUIT:
                 run = False
 
-        refresh_window(buttons)
-        redraw_window(win, ca, buttons)
+        wa.refresh_window(buttons)
+        wa.redraw_window(win, ca, buttons)
 
-    pygame.quit()
+    wa.pygame.quit()
