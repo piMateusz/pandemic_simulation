@@ -5,6 +5,8 @@ import read
 
 if __name__ == '__main__':
     polmap = read.read_asc("data/polds00g.asc")
-    sample = np.array([[1, 2, 3], [1, 2, 3]])
+    sample = np.array([[10, 10, 10], [10, 10, 10]])
+    sample1 = np.array([[100]])
 
-    ca.CA(sample, a=2, b=2)
+    cell_auto = ca.CA(sample1, a=2, b=2)
+    cell_auto.run(4)

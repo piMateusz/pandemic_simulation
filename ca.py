@@ -12,18 +12,21 @@ class CA:
             for j, col in enumerate(row):
                 init_data = []
                 x = 0
-                for _ in range(a+b+2):
-                    new_x = random.randint(0, col-x)
+                for it in range(3):
+                    while True:
+                        new_x = random.randint(0, col-x)
+                        if it or new_x:
+                            break
                     init_data.append(new_x)
                     x += new_x
 
                 self.C[i][j] = StateVector(a, b, init_data=init_data)
-                print(self.C[i][j])
-                print(self.C[i][j].total())
 
     def nbhd(self, i: int, j: int):
         return self.C[i-1:i+2, j-1:j+2]
 
-    def transition(self, i, j, neighbour):
-        """ Transition function"""
-        raise NotImplementedError()
+    def run(self, n):
+        for _ in range(n):
+            for row in self.C:
+                for col in row:
+                    col.next()

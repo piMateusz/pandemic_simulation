@@ -1,11 +1,14 @@
 #!usr/bin/env python
-from constants import BIRTH_DEATH_RATE as MU
+from copy import deepcopy
+import numpy as np
+
+import constants
 
 class State:
 
-    def __init__(self, n: int, type: str, day=0):
-        if type in ['S', 'E', 'I', 'R']:
-            self.type = type
+    def __init__(self, n: int, type_: str, day=0):
+        if type_ in ['S', 'E', 'I', 'R']:
+            self.type = type_
         else:
             raise ValueError('Invalid type value. Choose from [S, E, I, R]')
         self._day = day
@@ -33,11 +36,11 @@ class StateVector:
         self.b = b
         self.beta = beta
         if init_data:
-            if len(init_data) == a+b+2:
+            if len(init_data) == 3:
                 self.__vector = [
                     State(init_data[0], 'S'),
-                    *(State(n, 'E', day=i) for i, n in enumerate(init_data[1:a+1])),
-                    *(State(n, 'I', day=i) for i, n in enumerate(init_data[a+1:a+b+1])),
+                    *(State(n, 'E', day=i) for i, n in enumerate([init_data[1]]+[0]*(a-1))),
+                    *(State(n, 'I', day=i) for i, n in enumerate([init_data[2]]+[0]*(b-1))),
                     State(init_data[-1], 'R')
                 ]
             else:
@@ -62,7 +65,7 @@ class StateVector:
     def __getitem__(self, key):
         if isinstance(key, int):
             return self.__vector[key]
-        elif key in StateVector.key_map:
+        elif key in StateVector.__key_map:
             return self.__vector[StateVector.__key_map[key]]
         else:
             raise KeyError('Key must be int or proper string')
@@ -73,44 +76,53 @@ class StateVector:
     def __repr__(self):
         return f"{self.__vector}"
 
-    def total(self, type='all'):
+    def _infection_prob(self):
+        if self.total() == 0:
+            return 0
+        q = np.random.normal(1-np.exp(-self.beta*(self.total('I')/self.total())))
+        print(f"Q: {q}")
+        if q < 0:
+            return 0
+        if q > 1:
+            return 1
+        return q
+
+    def total(self, type_='all'):
         types = {
             "all": self.__vector,
-            "S": self.__vector[0],
+            "S": self.__vector[0:1],
             "E": self.__vector[1:self.a+1],
             "I": self.__vector[self.a+1:self.a+self.b+1],
-            "R": self.__vector[-1]
+            "R": self.__vector[-1:]
         }
-        if type not in types:
+        if type_ not in types:
             raise ValueError("Invalid type. Choose from  [all, S, E, I, R]")
-        return sum((state.n for state in types.get(type)))
+        return sum((state.n for state in types.get(type_)))
 
-    def _dS(self):
-        s = self.total('S')
-        i = self.total('I')
-        n = self.total()
-        return MU*(n-s) - self.beta*(i/n)*s
+    def _dS(self, prev, prob):
+        return round((1-constants.DEATH+constants.BIRTH)*((1-prob)*prev[0].n))
 
-    def _dE(self):
-        s = self.total('S')
-        i = self.total('I')
-        n = self.total()
-        e = self.total('E')
-        return self.beta*(i/n)*s - (MU+1/self.a)*e
+    def _dE(self, prev, prob, it):
+        if self.__vector[it].day == 0:
+            return round((1-constants.DEATH+constants.BIRTH)*prob*prev[0].n)
+        return round((1-constants.DEATH+constants.BIRTH-constants.MORTALITY)*prev[it-1].n)
 
-    def _dI(self):
-        e = self.total('E')
-        i = self.total('I')
-        return 1/self.a*e - (MU + 1/self.a)*i
+    def _dI(self, prev, it):
+        if self.__vector[it].day == 0:
+            return round((1-constants.DEATH+constants.BIRTH-constants.MORTALITY)*prev[self.a].n)
+        return round((1-constants.DEATH+constants.BIRTH-constants.MORTALITY)*prev[it-1].n)
 
-    def _dR(self):
-        i = self.total('I')
-        r = self.total('R')
-        return (1/self.a)*i - MU*r
+    def _dR(self, prev):
+        return round((1-constants.DEATH-constants.BIRTH)*prev[-1].n+\
+            (1-constants.DEATH+constants.BIRTH-constants.MORTALITY)*\
+            prev[-2].n)
 
     def next(self):
-        for it in range(1, self.a):
-            self.__vector[it+1].n = self.__vector[it].n
-        for it in range(self.a+1, self.a+self.b):
-            self.__vector[it+1].n = self.__vector[it].n
-        #TODO add derivatives
+        inf_prob = self._infection_prob()
+        vect = deepcopy(self.__vector)
+        self.__vector[0].n = self._dS(vect, inf_prob)
+        for it in range(1, self.a+1):
+            self.__vector[it].n = self._dE(vect, inf_prob, it)
+        for it in range(self.a+1, self.a+self.b+1):
+            self.__vector[it].n = self._dI(vect, it)
+        self.__vector[-1].n = self._dR(vect)
