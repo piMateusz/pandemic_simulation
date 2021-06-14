@@ -5,7 +5,6 @@ import sys
 import numpy as np
 import pygame
 from state import StateVector
-np.set_printoptions(threshold=sys.maxsize)
 
 
 class CA:
@@ -18,15 +17,14 @@ class CA:
                 if not np.isnan(col):
                     init_data = []
                     x = 0
-                    for it in range(3):
+                    for it in range(a + b + 2):
                         while True:
-                            new_x = random.randint(0, col-x)
+                            new_x = random.randint(0, int(col)-x)
                             if it or new_x:
                                 break
                         init_data.append(new_x)
                         x += new_x
-
-                        self.C[i][j] = StateVector(a, b, init_data=init_data)
+                    self.C[i][j] = StateVector(a, b, init_data=init_data)
                 else:
                     self.C[i][j] = col
 
@@ -37,7 +35,8 @@ class CA:
         for _ in range(n):
             for row in self.C:
                 for col in row:
-                    col.next()
+                    if isinstance(col, StateVector):
+                        col.next()
 
     def draw_infected(self, win):
         infected_matrix = np.zeros((len(self.C), len(self.C[0])))
@@ -57,5 +56,5 @@ class CA:
                     pygame.draw.rect(win, (infected_matrix[y, x], infected_matrix[y, x], infected_matrix[y, x]),
                                      (x * self.cell_size, y * self.cell_size, self.cell_size, self.cell_size))
                 else:
-                    pygame.draw.rect(win, (0, 0, 255),
+                    pygame.draw.rect(win, (0, 0, 128),
                                      (x * self.cell_size, y * self.cell_size, self.cell_size, self.cell_size))

@@ -2,7 +2,7 @@ from ca import CA
 import read
 from visualization.buttons import Button
 import visualization.window_actions as wa
-from constants import CELL_SIZE
+import constants
 
 
 def main():
@@ -10,11 +10,11 @@ def main():
 
     # CA
     density_map = read.read_asc("data/polds00g.asc")
-    ca = CA(density_map, a=2, b=2, cell_size=CELL_SIZE)
+    cell_auto = CA(density_map, a=2, b=2, cell_size=constants.CELL_SIZE)
 
     # screen size
-    screen_width = density_map.shape[1] * CELL_SIZE + 200
-    screen_height = density_map.shape[0] * CELL_SIZE
+    screen_width = density_map.shape[1] * constants.CELL_SIZE + 200
+    screen_height = density_map.shape[0] * constants.CELL_SIZE
 
     # buttons
     import_data_button = Button(screen_width - 175, 100, 150, 30, "Import data")
@@ -27,6 +27,7 @@ def main():
     wa.pygame.display.set_caption('Pandemic simulation')
 
     run = True
+    run_simulation = True
 
     # main loop
     while run:
@@ -35,7 +36,13 @@ def main():
             if event.type == wa.pygame.QUIT:
                 run = False
 
-        wa.refresh_window(buttons)
-        wa.redraw_window(win, ca, buttons)
+            if event.type == wa.pygame.MOUSEBUTTONDOWN and event.button == 1:
+                run_simulation, import_data, new_density_map = wa.check_button_click(buttons, event.pos)
+                if import_data:
+                    cell_auto = CA(new_density_map, a=2, b=2, cell_size=constants.CELL_SIZE)
+
+        if run_simulation:
+            wa.redraw_window(win, cell_auto, buttons)
+            cell_auto.run(1)
 
     wa.pygame.quit()
