@@ -17,7 +17,7 @@ class CA:
                 if not np.isnan(col):
                     init_data = []
                     x = 0
-                    for it in range(a + b + 2):
+                    for it in range(3):
                         while True:
                             new_x = random.randint(0, int(col)-x)
                             if it or new_x:

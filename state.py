@@ -44,7 +44,7 @@ class StateVector:
                     State(init_data[-1], 'R')
                 ]
             else:
-                raise ValueError('Init data length must be equal a+b+2')
+                raise ValueError('Init data length must equal 3')
         else:
             self.__vector = [
                 State(0, 'S'),
