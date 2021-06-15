@@ -1,6 +1,7 @@
 #!usr/bin/env python
 from copy import deepcopy
 import random
+import time
 
 import numpy as np
 import pygame
@@ -50,8 +51,8 @@ class CA:
 
     def run(self, n):
         dd = CA.greater(self.density, 3000)
-        commuters_matrix = [[list()]*len(self.C[0])]*len(self.C)
         for _ in range(n):
+            commuters_matrix = [[list()]*len(self.C[0])]*len(self.C)
             for i, row in enumerate(self.C):
                 for j, col in enumerate(row):
                     if isinstance(col, StateVector):
@@ -66,7 +67,7 @@ class CA:
                                 min_dd_x = x
                                 min_dd_y = x
 
-                        commuters = col.next(commuters_matrix)
+                        commuters = col.next(commuters_matrix[i][j])
                         commuters_nbhd, commuters_dd = deepcopy(commuters), deepcopy(commuters)
                         for state in commuters_nbhd:
                             state.n = state.n*(1-self.long_distance_commuters)
@@ -75,6 +76,8 @@ class CA:
 
                         commuters_matrix[nbhd_i][nbhd_j].append(commuters_nbhd)
                         commuters_matrix[min_dd_x][min_dd_y].append(commuters_dd)
+            print(commuters_matrix[0][0])
+            time.sleep(1)
 
     def draw_infected(self, win):
         infected_matrix = np.zeros((len(self.C), len(self.C[0])))

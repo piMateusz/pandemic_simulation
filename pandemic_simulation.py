@@ -1,6 +1,4 @@
 #!usr/bin/env python
-import time
-
 from ca import CA
 import read
 from visualization.buttons import Button
@@ -46,7 +44,5 @@ def main():
         if run_simulation:
             wa.redraw_window(win, cell_auto, buttons)
             cell_auto.run(1)
-
-        time.sleep(0.1)
 
     wa.pygame.quit()

@@ -1,6 +1,7 @@
 #!usr/bin/env python
 from copy import deepcopy
 import numpy as np
+import sys
 
 import constants
 
@@ -109,12 +110,22 @@ class StateVector:
         commuters_v[-1].n = self.__vector[-1].n*self.h_commuters
         return commuters_v
 
-    def _dS(self, prev, prob):
-        return round((1-constants.DEATH+constants.BIRTH)*((1-prob)*prev[0].n))
+    def _dS(self, prev, prob, commuters_in, commuters_out):
+        if commuters_in:
+            n = sum((vect[0].n for vect in commuters_in))
+        else:
+            n = 0
+        return round((1-constants.DEATH+constants.BIRTH)*\
+            ((1-prob)*(prev[0].n-commuters_out[0].n)+(1-prob)*n))
 
-    def _dE(self, prev, prob, it):
+    def _dE(self, prev, prob, it, commuters_in, commuters_out):
         if self.__vector[it].day == 0:
-            return round((1-constants.DEATH+constants.BIRTH)*prob*prev[0].n)
+            if commuters_in:
+                n = sum((vect[0].n for vect in commuters_in))
+            else:
+                n = 0
+            return round((1-constants.DEATH+constants.BIRTH)*\
+                (prob*(prev[0].n-commuters_out[0].n)+prob*n))
         return round((1-constants.DEATH+constants.BIRTH-constants.MORTALITY)*prev[it-1].n)
 
     def _dI(self, prev, it):
@@ -127,14 +138,15 @@ class StateVector:
             (1-constants.DEATH+constants.BIRTH-constants.MORTALITY)*\
             prev[-2].n)
 
-    def next(self, commuters):
+    def next(self, commuters_in):
         #TODO: Dodaj dane z commuters do wyliczania pochodnych str 5, (18)-(23)
+        commuters_out = self.commuters()
         inf_prob = self._infection_prob()
         vect = deepcopy(self.__vector)
-        self.__vector[0].n = self._dS(vect, inf_prob)
+        self.__vector[0].n = self._dS(vect, inf_prob, commuters_in, commuters_out)
         for it in range(1, self.a+1):
-            self.__vector[it].n = self._dE(vect, inf_prob, it)
+            self.__vector[it].n = self._dE(vect, inf_prob, it, commuters_in, commuters_out)
         for it in range(self.a+1, self.a+self.b+1):
             self.__vector[it].n = self._dI(vect, it)
         self.__vector[-1].n = self._dR(vect)
-        return self.commuters()
+        return commuters_out
