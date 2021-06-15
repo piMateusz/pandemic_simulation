@@ -31,10 +31,13 @@ class State:
 class StateVector:
     __key_map = None
 
-    def __init__(self, a, b, init_data=None, beta=1):
+    def __init__(self, a, b, h_commuters, i_commuters, l_commuters, init_data=None, beta=1):
         self.a = a
         self.b = b
         self.beta = beta
+        self.h_commuters = h_commuters
+        self.i_commuters = i_commuters
+        self.l_commuters = l_commuters
         if init_data:
             if len(init_data) == 3:
                 self.__vector = [
@@ -44,7 +47,7 @@ class StateVector:
                     State(init_data[-1], 'R')
                 ]
             else:
-                raise ValueError('Init data length must be equal a+b+2')
+                raise ValueError('Init data length must equal 3')
         else:
             self.__vector = [
                 State(0, 'S'),
@@ -80,7 +83,6 @@ class StateVector:
         if self.total() == 0:
             return 0
         q = np.random.normal(1-np.exp(-self.beta*(self.total('I')/self.total())))
-        print(f"Q: {q}")
         if q < 0:
             return 0
         if q > 1:
@@ -98,6 +100,14 @@ class StateVector:
         if type_ not in types:
             raise ValueError("Invalid type. Choose from  [all, S, E, I, R]")
         return sum((state.n for state in types.get(type_)))
+
+    def commuters(self):
+        commuters_v = deepcopy(self.__vector)
+        commuters_v[0].n = self.__vector[0].n*self.h_commuters
+        for it in range(1, self.a+self.b+1):
+            commuters_v[it].n = self.__vector[it].n*self.i_commuters
+        commuters_v[-1].n = self.__vector[-1].n*self.h_commuters
+        return commuters_v
 
     def _dS(self, prev, prob):
         return round((1-constants.DEATH+constants.BIRTH)*((1-prob)*prev[0].n))
@@ -117,7 +127,8 @@ class StateVector:
             (1-constants.DEATH+constants.BIRTH-constants.MORTALITY)*\
             prev[-2].n)
 
-    def next(self):
+    def next(self, commuters):
+        #TODO: Dodaj dane z commuters do wyliczania pochodnych str 5, (18)-(23)
         inf_prob = self._infection_prob()
         vect = deepcopy(self.__vector)
         self.__vector[0].n = self._dS(vect, inf_prob)
@@ -126,3 +137,4 @@ class StateVector:
         for it in range(self.a+1, self.a+self.b+1):
             self.__vector[it].n = self._dI(vect, it)
         self.__vector[-1].n = self._dR(vect)
+        return self.commuters()
