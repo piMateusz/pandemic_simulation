@@ -10,9 +10,10 @@ class Button:
         self.text = text
 
     def draw(self, win):
-        pygame.draw.rect(win, (0, 0, 0), (self.x, self.y, self.width, self.height), 2)
+        pygame.draw.rect(win, (0, 0, 0), (self.x, self.y, self.width, self.height))
+        pygame.draw.rect(win, (255, 255, 255), (self.x + 2, self.y + 2, self.width - 4, self.height - 4))
         font = pygame.font.SysFont('comicsans', 20)
-        text = font.render(self.text, 1, (255, 0, 0))
+        text = font.render(self.text, 1, (0, 0, 128))
         win.blit(text, (int(self.x + self.width/2 - text.get_width()/2),
                         int(self.y + self.height/2 - text.get_height()/2)))
 

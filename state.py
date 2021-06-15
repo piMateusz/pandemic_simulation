@@ -80,7 +80,7 @@ class StateVector:
         if self.total() == 0:
             return 0
         q = np.random.normal(1-np.exp(-self.beta*(self.total('I')/self.total())))
-        print(f"Q: {q}")
+        # print(f"Q: {q}")
         if q < 0:
             return 0
         if q > 1:
