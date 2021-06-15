@@ -1,6 +1,5 @@
 #!usr/bin/env python
 import random
-import sys
 
 import numpy as np
 import pygame
