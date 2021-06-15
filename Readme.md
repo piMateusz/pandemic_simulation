@@ -35,3 +35,5 @@ Available options:
 * import data
 * start simulation
 * stop simulation
+
+> Model: https://holko.pl/public/documents/1-s2.0-S0957417415005631-main.pdf
