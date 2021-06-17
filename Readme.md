@@ -37,3 +37,27 @@ Available options:
 * stop simulation
 
 > Model: https://holko.pl/public/documents/1-s2.0-S0957417415005631-main.pdf
+
+## Code description
+
+### State  
+
+    type: str [S, E, I, R]  
+    S - susceptible  
+    E - exposed  
+    I - infected  
+    R - recovered  
+    day: int >= 0
+    n: str
+
+### StateVector
+
+    a: int >=0 Exposed period
+    b: int >=0 Infected period
+    beta: str Contact rate
+    [init_data]: Initial data in np.array format
+
+### CA (Cellular Automate)
+
+    cell_size: int >=0
+    C: Cell matrix
